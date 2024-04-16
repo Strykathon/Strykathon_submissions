@@ -1,0 +1,8 @@
+#conda=23.11.0
+keras=2.13.1
+opencv-python=4.9.0.80
+pytorchvideo=0.1.5
+tensorflow=2.13.1
+torch=2.2.1+cu118
+torchvision=0.17.1+cu118
+transformers=4.39.0

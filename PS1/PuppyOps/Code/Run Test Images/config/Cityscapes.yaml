@@ -1,0 +1,52 @@
+model:
+  name: EfficientNetV2M-shuffle
+  architecture: DeepLabV3plus # Unet
+  backbone: EfficientNetV2M
+  unfreeze_at: block6a_expand_activation # block4a_expand_activation
+  input_shape: [1024, 2048, 3] # do not change
+  output_stride: 32
+  filters: [16,32,64,128,256]
+  activation: leaky_relu # swish, leaky_relu
+  dropout_rate: 0
+  pretrained_weights: #/root/Semantic-Segmentation-Cityscapes/pretrained_models/Mapillary/trunk
+
+dataset:
+  name: Cityscapes
+  path: C:\Users\srika\Dropbox\PC\Downloads\Semantic-Segmentation-master\Semantic-Segmentation-master\data\
+  version: fine
+  num_train_images: -1
+  num_eval_images: -1
+  cache: false
+  cache_file: C:\Users\srika\Dropbox\PC\Downloads\Semantic-Segmentation-master\Semantic-Segmentation-master\data\data_cache\
+  seed: 80
+
+train_config:
+  batch_size: 1
+  loss: FocalHybridLoss
+  epochs: 15
+  final_epochs: 40
+  augment: false
+  mixed_precision: false # re-validate
+  optimizer:
+    name: Adam
+    weight_decay: 0.00005
+    momentum: 0.9
+    schedule:
+      name: PolynomialDecay
+      start_lr: 0.001
+      end_lr: 0.0001
+      decay_epochs: 10
+      power: 2
+  distribute:
+    strategy: MirroredStrategy #ParameterServerStrategy # NOT IMPEMENTED
+    devices: ["GPU:0", "GPU:1"] # NOT IMPEMENTED
+
+eval_config:
+  eval_scales: [0.5, 1, 2] # NOT IMPEMENTED
+  output_stride: 16 # NOT IMPEMENTED
+
+inference_config:
+  precision: float32 # NOT IMPEMENTED
+  output_stride: 16 # NOT IMPEMENTED
+
+logs_dir: # NOT IMPEMENTED

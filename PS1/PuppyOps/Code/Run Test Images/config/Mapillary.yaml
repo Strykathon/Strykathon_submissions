@@ -1,0 +1,52 @@
+model:
+  name: Test-whole-data
+  architecture: DeepLabV3plus # Unet
+  backbone: EfficientNetV2M
+  unfreeze_at: block6a_expand_activation # block4a_expand_activation
+  input_shape: [1024, 1856, 3] # do not change
+  output_stride: 32
+  filters: [16,32,64,128,256]
+  activation: leaky_relu # swish, leaky_relu
+  dropout_rate: 0
+  pretrained_weights: 
+
+dataset:
+  name: Mapillary
+  path: /mnt/dataset/Mapillary/
+  version: v1.2
+  num_train_images: -1
+  num_eval_images: -1
+  cache: false # do not cache mapillary -> huge file size (multiple terrabytes)
+  cache_file: /mnt/dataset/Mapillary/data_cache
+  seed: 80
+
+train_config:
+  batch_size: 3
+  loss: FocalHybridLoss
+  epochs: 10
+  final_epochs: 20
+  augment: false
+  mixed_precision: false
+  optimizer:
+    name: Adam
+    weight_decay: 0.0005
+    momentum: 0.9
+    schedule:
+      name: PolynomialDecay
+      start_lr: 0.001
+      end_lr: 0.0001
+      decay_epochs: 10
+      power: 2
+  distribute:
+    strategy: MirroredStrategy #ParameterServerStrategy # NOT IMPEMENTED
+    devices: ["GPU:0", "GPU:1"] # NOT IMPEMENTED
+
+eval_config:
+  eval_scales: [0.5, 1, 2] # NOT IMPEMENTED
+  output_stride: 16 # NOT IMPEMENTED
+
+inference_config:
+  precision: float32
+  output_stride: 16 # NOT IMPEMENTED
+
+logs_dir:  # NOT IMPEMENTED
